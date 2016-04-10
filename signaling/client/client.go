@@ -154,9 +154,11 @@ func (c *Client) comm(b []byte) error {
 			c.callback(b)
 		}
 	}
-	if *c.last != res.Last {
-		log.Println("last:", res.Last)
-	}
+	/*
+		if *c.last != res.Last {
+			log.Println("last:", res.Last)
+		}
+	*/
 	*c.last = res.Last
 	return nil
 }

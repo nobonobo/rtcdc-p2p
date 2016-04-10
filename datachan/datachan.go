@@ -76,7 +76,6 @@ func (pc *Connection) IceCandidates() []webrtc.IceCandidate {
 func (pc *Connection) Offer() (*webrtc.SessionDescription, error) {
 	ices := []webrtc.IceCandidate{}
 	pc.OnIceCandidate = func(ice webrtc.IceCandidate) {
-		log.Println("ices:", len(ices), ice)
 		ices = append(ices, ice)
 	}
 	done := make(chan struct{})
@@ -116,7 +115,6 @@ func (pc *Connection) Offer() (*webrtc.SessionDescription, error) {
 func (pc *Connection) Answer(remote *webrtc.SessionDescription) (*webrtc.SessionDescription, error) {
 	ices := []webrtc.IceCandidate{}
 	pc.OnIceCandidate = func(ice webrtc.IceCandidate) {
-		log.Println("ices:", len(ices), ice)
 		ices = append(ices, ice)
 	}
 	done := make(chan struct{})

@@ -7,9 +7,6 @@ import (
 	"log"
 	"net"
 	"net/rpc/jsonrpc"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	webrtc "github.com/keroserene/go-webrtc"
@@ -36,7 +33,7 @@ func New(room, id string) *Client {
 }
 
 // Open ...
-func (c *Client) Open(sig <-chan os.Signal) (net.Conn, error) {
+func (c *Client) Open() (net.Conn, error) {
 	con, err := datachan.New(iceServers)
 	if err != nil {
 		return nil, err
@@ -56,12 +53,8 @@ func (c *Client) Open(sig <-chan os.Signal) (net.Conn, error) {
 	if err := c.Send("", &signaling.Request{}); err != nil {
 		return nil, err
 	}
-	select {
-	case channel := <-complete:
-		return channel, nil
-	case <-sig:
-		return nil, fmt.Errorf("aborted")
-	}
+	channel := <-complete
+	return channel, nil
 }
 
 // Close ...
@@ -148,10 +141,8 @@ func main() {
 		log.Fatalln("id must set unique")
 	}
 	webrtc.SetLoggingVerbosity(0)
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT)
 	c := New(room, id)
-	conn, err := c.Open(sig)
+	conn, err := c.Open()
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -166,13 +157,14 @@ func main() {
 			log.Println(err)
 		}
 	}
-	fmt.Println(time.Since(begin), reply)
+	fmt.Println("Call 1000times:", time.Since(begin))
+	fmt.Println("       average:", time.Duration(int64(time.Since(begin))/1000))
 	begin = time.Now()
 	for i := 0; i < 1000; i++ {
 		if call := client.Go("Service.Echo", "hello!", &reply, nil); call.Error != nil {
 			log.Println(err)
 		}
 	}
-	fmt.Println(time.Since(begin))
-	<-sig
+	fmt.Println("Go   1000times:", time.Since(begin))
+	fmt.Printf("    throughput: %dr/s\n", int64(1000*time.Second)/int64(time.Since(begin)))
 }
