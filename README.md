@@ -14,7 +14,7 @@ cd $GOPATH/src/github.com/nobonobo/rtcdc-p2p/signaling/server
 make update APPID=whatever
 ```
 
-https://signaling-2016.appspot-com/
+https://signaling-2016.appspot.com/
 
 ## server build and run
 
