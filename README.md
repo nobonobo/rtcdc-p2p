@@ -3,6 +3,9 @@ p2p data connection on webrtc
 
 ## depends
 
+- libX11(-dev)
+- pkg-config
+
 ```sh
 go get github.com/keroserene/go-webrtc
 ```
