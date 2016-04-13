@@ -95,16 +95,23 @@ func (c *Client) dispatch(b []byte) {
 	switch v := value.(type) {
 	case *signaling.Request:
 	case *signaling.Offer:
-		sdp := &webrtc.SessionDescription{
-			Type: "offer",
-			Sdp:  v.Description,
+		sdp := webrtc.DeserializeSessionDescription(v.Description)
+		/*
+			sdp := &webrtc.SessionDescription{
+				Type: "offer",
+				Sdp:  v.Description,
+			}
+		*/
+		if sdp == nil {
+			log.Println("desirialize sdp failed", v.Description)
+			return
 		}
 		answer, err := c.conn.Answer(sdp)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		if err := c.Send(m.Sender, &signaling.Answer{Description: answer.Sdp}); err != nil {
+		if err := c.Send(m.Sender, &signaling.Answer{Description: answer.Serialize()}); err != nil {
 			log.Println(err)
 			return
 		}

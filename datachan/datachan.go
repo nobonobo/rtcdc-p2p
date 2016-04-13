@@ -84,7 +84,14 @@ func (pc *Connection) Offer() (*webrtc.SessionDescription, error) {
 		close(done)
 	}
 	pc.OnConnectionStateChange = func(s webrtc.PeerConnectionState) {
-		log.Println("OnConnectionStateChange:", s)
+		if int(s) >= len(webrtc.PeerConnectionStateString) {
+			log.Println("OnConnectionStateChange:", s)
+		} else {
+			log.Println("OnConnectionStateChange:", webrtc.PeerConnectionStateString[s])
+		}
+	}
+	pc.OnSignalingStateChange = func(s webrtc.SignalingState) {
+		log.Println("OnSignalingStateChange:", webrtc.SignalingStateString[s])
 	}
 	pc.OnIceCandidateError = func() {
 		log.Println("OnIceCandidateError")
@@ -123,7 +130,14 @@ func (pc *Connection) Answer(remote *webrtc.SessionDescription) (*webrtc.Session
 		close(done)
 	}
 	pc.OnConnectionStateChange = func(s webrtc.PeerConnectionState) {
-		log.Println("OnConnectionStateChange:", s)
+		if int(s) >= len(webrtc.PeerConnectionStateString) {
+			log.Println("OnConnectionStateChange:", s)
+		} else {
+			log.Println("OnConnectionStateChange:", webrtc.PeerConnectionStateString[s])
+		}
+	}
+	pc.OnSignalingStateChange = func(s webrtc.SignalingState) {
+		log.Println("OnSignalingStateChange:", webrtc.SignalingStateString[s])
 	}
 	pc.OnIceCandidateError = func() {
 		log.Println("OnIceCandidateError")

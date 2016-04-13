@@ -84,7 +84,7 @@ func (s *Server) dispatch(b []byte) {
 			delete(s.members, m.Sender)
 			return
 		}
-		if err := s.Send(m.Sender, &signaling.Offer{Description: offer.Sdp}); err != nil {
+		if err := s.Send(m.Sender, &signaling.Offer{Description: offer.Serialize()}); err != nil {
 			log.Println("send failed:", err)
 			delete(s.members, m.Sender)
 			return
@@ -99,9 +99,16 @@ func (s *Server) dispatch(b []byte) {
 			log.Println("connection failed:", m.Sender)
 			return
 		}
-		sdp := &webrtc.SessionDescription{
-			Type: "answer",
-			Sdp:  v.Description,
+		sdp := webrtc.DeserializeSessionDescription(v.Description)
+		/*
+			sdp := &webrtc.SessionDescription{
+				Type: "answer",
+				Sdp:  v.Description,
+			}
+		*/
+		if sdp == nil {
+			log.Println("desirialize sdp failed", v.Description)
+			return
 		}
 		if err := conn.SetRemoteDescription(sdp); err != nil {
 			log.Println("answer set failed:", err)
